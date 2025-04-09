@@ -38,10 +38,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ollama API URL (local)
-OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://localhost:11434/api")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
-
 # -----------------------------------------------------------------------------
 # Pydantic Models
 # -----------------------------------------------------------------------------
@@ -91,41 +87,29 @@ class ProductDetailsResponse(BaseModel):
 # -----------------------------------------------------------------------------
 
 async def call_ollama(prompt: str, system_prompt: str = None) -> str:
-    """Call Ollama API with energy-efficient parameters (green practice)"""
+    """Forward request to Express backend service"""
     try:
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-        
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
-                f"{OLLAMA_API_URL}/chat",
+                "http://localhost:3000/api/chat/ollama",
                 json={
-                    "model": OLLAMA_MODEL,
-                    "messages": messages,
-                    # Green practice: Use efficient parameters to reduce computation
-                    "options": {
-                        "temperature": 0.7,
-                        "top_k": 40,
-                        "top_p": 0.9,
-                        "num_predict": 256,  # Limit token generation
-                    }
+                    "prompt": prompt,
+                    "systemPrompt": system_prompt
                 }
             )
             
             if response.status_code != 200:
-                logger.error(f"Ollama API error: {response.text}")
+                logger.error(f"Backend API error: {response.text}")
                 return "Sorry, I'm having trouble processing your request right now."
             
             result = response.json()
-            return result["message"]["content"]
+            return result["response"]
     except Exception as e:
-        logger.error(f"Error calling Ollama: {str(e)}")
+        logger.error(f"Error calling backend service: {str(e)}")
         return "Sorry, I couldn't connect to the AI service. Please try again later."
 
 async def get_product_embedding(product: dict) -> str:
-    """Generate embedding for a product using Ollama"""
+    """Generate embedding for a product using backend service"""
     product_text = f"{product['name']} {product['description']} {product['category']}"
     prompt = f"Generate a concise semantic summary of this product: {product_text}"
     return await call_ollama(prompt)
@@ -245,7 +229,7 @@ async def get_recommendations(request: RecommendationRequest):
                 # Get AI-powered product similarity
                 target_embedding = await get_product_embedding(target_product)
                 
-                # Generate recommendations using Ollama
+                # Generate recommendations using backend service
                 prompt = f"""
                 Based on this product: {target_product['name']}
                 Category: {target_product['category']}
@@ -285,23 +269,14 @@ async def get_recommendations(request: RecommendationRequest):
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_with_assistant(request: ChatRequest):
     """
-    Chat with the sustainable shopping assistant powered by Ollama
+    Chat with the sustainable shopping assistant powered by backend service
     """
-    # Construct the system prompt focused on sustainable shopping
-    system_prompt = """
-    You are an eco-friendly shopping assistant for a green e-commerce platform.
-    Your role is to help users make sustainable purchasing decisions and understand the environmental impact of products.
-    Provide specific, actionable advice about sustainable products and green living.
-    Always mention carbon footprint considerations when relevant.
-    Keep your responses concise but informative, as this saves computational resources (a green practice).
-    """
-    
     # Extract the user's message
     user_message = request.messages[-1].content if request.messages else ""
     
     try:
-        # Call Ollama for the chat response
-        ai_response = await call_ollama(user_message, system_prompt)
+        # Call backend service for the chat response
+        ai_response = await call_ollama(user_message)
         
         # Extract potential sustainability tips (simple approach)
         sustainability_tips = []

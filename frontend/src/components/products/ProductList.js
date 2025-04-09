@@ -376,6 +376,33 @@ const ProductList = ({ onApiCall }) => {
                     </div>
                   )}
 
+                  {/* Product Recommendations */}
+                  {product.recommendations &&
+                    product.recommendations.length > 0 && (
+                      <div className="recommendations">
+                        <h4>Similar Products:</h4>
+                        <div className="recommendation-list">
+                          {product.recommendations.slice(0, 2).map((rec) => (
+                            <Link
+                              key={rec._id}
+                              to={`/product/${rec._id}`}
+                              className="recommendation-item"
+                            >
+                              <img
+                                src={rec.image}
+                                alt={rec.name}
+                                className="recommendation-image"
+                                loading="lazy"
+                              />
+                              <span className="recommendation-name">
+                                {rec.name}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                   {/* Carbon Footprint */}
                   <p
                     className="carbon-info"
