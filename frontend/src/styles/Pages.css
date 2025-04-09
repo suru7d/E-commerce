@@ -1,0 +1,308 @@
+/* 
+  Energy-Efficient Page Styles
+  - Simplified UI to reduce rendering cost
+  - Minimal animations to save energy
+  - Optimized for dark theme (OLED/AMOLED screens)
+  - Compact layout to reduce scrolling
+*/
+
+/* Import CSS variables */
+@import "./variables.css";
+
+/* Common page container */
+.page-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+/* About page styles */
+.about-section {
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+.about-section h2 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-lg);
+}
+
+.about-section p {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.eco-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.eco-feature {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--surface-light);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.eco-icon {
+  color: var(--accent);
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.eco-feature h3 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-md);
+}
+
+.eco-feature p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: 0;
+}
+
+.cta-container {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+/* Energy Efficiency page styles */
+.intro-section {
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+.energy-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.energy-stat-card {
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  border-top: var(--border-width-normal) solid var(--accent);
+}
+
+.energy-stat-card h3 {
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-md);
+}
+
+.energy-rating, .energy-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent);
+  margin: var(--spacing-sm) 0;
+}
+
+.energy-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.energy-feature {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+.feature-icon {
+  color: var(--accent);
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.energy-impact {
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-top: var(--spacing-lg);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+/* Contact page styles */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.contact-info {
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+.contact-methods {
+  margin-top: var(--spacing-md);
+}
+
+.contact-method {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: var(--border-width-thin) solid var(--border);
+}
+
+.contact-method:last-child {
+  border-bottom: none;
+}
+
+.contact-icon {
+  color: var(--accent);
+  font-size: var(--font-size-lg);
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.contact-form-container {
+  background-color: var(--surface);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: var(--border-width-normal) solid var(--accent);
+}
+
+.contact-form {
+  margin-top: var(--spacing-md);
+}
+
+.form-success {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.form-success h2 {
+  color: var(--success);
+  margin-bottom: var(--spacing-md);
+}
+
+textarea {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: var(--border-width-thin) solid var(--border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  background-color: var(--surface-light);
+  color: var(--text-primary);
+  resize: vertical;
+  font-family: var(--font-family);
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.eco-note {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: var(--surface-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  border-left: var(--border-width-thin) solid var(--accent);
+}
+
+/* NotFound page styles */
+.not-found-container {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  background-color: var(--surface);
+  border-radius: var(--border-radius-md);
+  border-top: var(--border-width-normal) solid var(--accent);
+}
+
+.not-found-icon {
+  font-size: var(--font-size-4xl);
+  color: var(--accent);
+  margin-bottom: var(--spacing-md);
+}
+
+.not-found-message {
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.not-found-suggestions {
+  text-align: left;
+  margin: var(--spacing-lg) auto;
+  max-width: 300px;
+}
+
+.not-found-suggestions ul {
+  padding-left: var(--spacing-lg);
+  margin-top: var(--spacing-xs);
+}
+
+.not-found-suggestions li {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.not-found-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-lg) 0;
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+  .eco-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .energy-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .energy-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .contact-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .not-found-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .energy-features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

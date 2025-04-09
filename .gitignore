@@ -1,0 +1,7 @@
+backend/node_modules/
+backend/dist/
+frontend/node_modules/
+frontend/dist/
+fastapi-service/venv/
+fastapi-service/__pycache__/
+node_modules/

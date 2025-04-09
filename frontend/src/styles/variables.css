@@ -1,0 +1,170 @@
+/* 
+  Energy-Efficient E-commerce App - CSS Variables
+  This file contains all the CSS variables used throughout the application
+  for consistent styling and theming.
+  
+  - Uses low-contrast colors to reduce energy consumption on OLED/AMOLED screens
+  - Minimizes color variations to reduce rendering complexity
+  - Prioritizes dark theme as default for energy efficiency
+*/
+
+:root {
+  /* Color Palette - Energy-Efficient Light Theme */
+  --light-primary: #006064; /* Teal - less energy than bright green */
+  --light-primary-dark: #00363a;
+  --light-secondary: #00838f;
+  --light-accent: #4fb3bf;
+  --light-accent-light: #80cbc4;
+  --light-background: #e0f7fa; /* Light teal background */
+  --light-surface: #f5f5f5; /* Light gray surface - less bright than white */
+  --light-error: #b71c1c; /* Darker red - less energy intensive */
+  --light-warning: #e65100; /* Darker orange */
+  --light-success: #1b5e20; /* Darker green */
+  --light-text-primary: #263238; /* Dark blue-gray - better contrast with less energy */
+  --light-text-secondary: #455a64;
+  --light-text-light: #eceff1;
+  --light-border: #b0bec5;
+
+  /* Color Palette - Energy-Efficient Dark Theme (Default) */
+  --dark-primary: #00838f; /* Teal - less energy than bright green */
+  --dark-primary-dark: #005662;
+  --dark-secondary: #0097a7;
+  --dark-accent: #26c6da;
+  --dark-accent-light: #4dd0e1;
+  --dark-background: #102027; /* Very dark blue-gray - OLED efficient */
+  --dark-surface: #263238; /* Dark blue-gray */
+  --dark-surface-light: #37474f;
+  --dark-surface-lighter: #455a64;
+  --dark-error: #ef5350;
+  --dark-warning: #ffb74d;
+  --dark-success: #66bb6a;
+  --dark-text-primary: #eceff1; /* Light blue-gray - good contrast with dark bg */
+  --dark-text-secondary: #b0bec5;
+  --dark-text-light: #eceff1;
+  --dark-border: #546e7a;
+
+  /* Current Theme (default to dark for energy efficiency) */
+  --primary: var(--dark-primary);
+  --primary-dark: var(--dark-primary-dark);
+  --secondary: var(--dark-secondary);
+  --accent: var(--dark-accent);
+  --accent-light: var(--dark-accent-light);
+  --background: var(--dark-background);
+  --surface: var(--dark-surface);
+  --error: var(--dark-error);
+  --warning: var(--dark-warning);
+  --success: var(--dark-success);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-light: var(--dark-text-light);
+  --border: var(--dark-border);
+
+  /* Typography - System fonts for performance */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-md: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.75rem; /* 28px - reduced from 30px */
+  --font-size-4xl: 2rem; /* 32px - reduced from 36px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing - Simplified for consistency */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 2.5rem; /* 40px */
+  --spacing-3xl: 3rem; /* 48px */
+
+  /* Borders - Simplified radius for consistency */
+  --border-radius-sm: 3px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 9px;
+  --border-radius-xl: 12px;
+  --border-radius-full: 9999px;
+
+  --border-width-thin: 1px;
+  --border-width-normal: 2px;
+  --border-width-thick: 3px; /* Reduced from 4px */
+
+  /* Shadows - Reduced for energy efficiency */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions - Reduced for energy efficiency */
+  --transition-fast: 100ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+
+  /* Z-index */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  /* Layout */
+  --container-max-width: 1100px; /* Reduced from 1200px */
+  --header-height: 60px; /* Reduced from 64px */
+  --footer-height: auto;
+
+  /* Grid */
+  --grid-gap-sm: 0.75rem; /* Reduced from 1rem */
+  --grid-gap-md: 1.25rem; /* Reduced from 1.5rem */
+  --grid-gap-lg: 1.75rem; /* Reduced from 2rem */
+}
+
+/* Light Theme Class - Apply to body or a container to switch to light theme */
+.light-theme {
+  --primary: var(--light-primary);
+  --primary-dark: var(--light-primary-dark);
+  --secondary: var(--light-secondary);
+  --accent: var(--light-accent);
+  --accent-light: var(--light-accent-light);
+  --background: var(--light-background);
+  --surface: var(--light-surface);
+  --error: var(--light-error);
+  --warning: var(--light-warning);
+  --success: var(--light-success);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --text-light: var(--light-text-light);
+  --border: var(--light-border);
+}
+
+/* Media query for automatic dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: var(--dark-primary);
+    --primary-dark: var(--dark-primary-dark);
+    --secondary: var(--dark-secondary);
+    --accent: var(--dark-accent);
+    --accent-light: var(--dark-accent-light);
+    --background: var(--dark-background);
+    --surface: var(--dark-surface);
+    --error: var(--dark-error);
+    --warning: var(--dark-warning);
+    --success: var(--dark-success);
+    --text-primary: var(--dark-text-primary);
+    --text-secondary: var(--dark-text-secondary);
+    --text-light: var(--dark-text-light);
+    --border: var(--dark-border);
+  }
+}

@@ -1,0 +1,34 @@
+.receipt-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color:black;
+}
+
+.receipt-details {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.receipt-details p {
+  margin: 5px 0;
+}
+
+/* Highlight Name and Email */
+.receipt-details .highlight {
+  font-weight: bold;
+  color: #007bff; /* Blue color */
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}

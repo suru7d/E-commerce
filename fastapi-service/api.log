@@ -1,0 +1,6 @@
+2025-03-29 01:24:08,822 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 500 Internal Server Error"
+2025-03-29 01:24:08,822 - fastapi-service - ERROR - Ollama API error: {"error":"model requires more system memory (7.5 GiB) than is available (2.5 GiB)"}
+2025-03-29 01:24:08,823 - fastapi-service - INFO - Chat request processed, response length: 60 chars
+2025-03-29 23:59:19,043 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 500 Internal Server Error"
+2025-03-29 23:59:19,043 - fastapi-service - ERROR - Ollama API error: {"error":"model requires more system memory (7.5 GiB) than is available (2.9 GiB)"}
+2025-03-29 23:59:19,044 - fastapi-service - INFO - Chat request processed, response length: 60 chars
