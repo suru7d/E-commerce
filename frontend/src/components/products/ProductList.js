@@ -324,16 +324,32 @@ const ProductList = ({ onApiCall }) => {
           <div className="product-grid">
             {products.map((product) => (
               <div key={product._id} className="product-card">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image"
-                  // Green practice: Use loading=lazy to defer loading offscreen images
-                  loading="lazy"
-                />
+                <Link to={`/product/${product._id}`}>
+                  <img
+                    src={
+                      product.image.startsWith("http")
+                        ? product.image
+                        : `https://via.placeholder.com/300x200?text=${encodeURIComponent(
+                            product.name
+                          )}`
+                    }
+                    alt={product.name}
+                    className="product-image"
+                    // Green practice: Use loading=lazy to defer loading offscreen images
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null; // Prevent infinite loop
+                      e.target.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(
+                        product.name
+                      )}`;
+                    }}
+                  />
+                </Link>
 
                 <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
+                  <h3 className="product-title">
+                    <Link to={`/product/${product._id}`}>{product.name}</Link>
+                  </h3>
 
                   <p className="product-price">${product.price.toFixed(2)}</p>
 

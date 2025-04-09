@@ -40,7 +40,7 @@ app.add_middleware(
 
 # Ollama API URL (local)
 OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://localhost:11434/api")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama2")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
 
 # -----------------------------------------------------------------------------
 # Pydantic Models
@@ -82,6 +82,10 @@ class ChatResponse(BaseModel):
     sustainabilityTips: Optional[List[str]] = None
     recommendedProducts: Optional[List[str]] = None
 
+class ProductDetailsResponse(BaseModel):
+    product: Product
+    recommendations: List[Product]
+
 # -----------------------------------------------------------------------------
 # Helper Functions
 # -----------------------------------------------------------------------------
@@ -119,6 +123,12 @@ async def call_ollama(prompt: str, system_prompt: str = None) -> str:
     except Exception as e:
         logger.error(f"Error calling Ollama: {str(e)}")
         return "Sorry, I couldn't connect to the AI service. Please try again later."
+
+async def get_product_embedding(product: dict) -> str:
+    """Generate embedding for a product using Ollama"""
+    product_text = f"{product['name']} {product['description']} {product['category']}"
+    prompt = f"Generate a concise semantic summary of this product: {product_text}"
+    return await call_ollama(prompt)
 
 # Mock product database (in production, would fetch from MongoDB)
 SAMPLE_PRODUCTS = [
@@ -218,40 +228,53 @@ async def root():
 @app.post("/api/recommendations", response_model=ProductList)
 async def get_recommendations(request: RecommendationRequest):
     """
-    Get eco-friendly product recommendations based on user behavior or product
+    Get AI-powered eco-friendly product recommendations
     """
     logger.info(f"Recommendation request: {request}")
     
     try:
-        # Filter products based on request
+        # Filter initial products
         filtered_products = get_products(
             category=request.category,
             sustainable_only=request.sustainableOnly
         )
         
-        # If specific product ID is provided, get similar products
         if request.productId:
             target_product = get_product_by_id(request.productId)
             if target_product:
-                # Simple mock recommendation logic - same category products
-                same_category = [
+                # Get AI-powered product similarity
+                target_embedding = await get_product_embedding(target_product)
+                
+                # Generate recommendations using Ollama
+                prompt = f"""
+                Based on this product: {target_product['name']}
+                Category: {target_product['category']}
+                Sustainability Score: {target_product['sustainabilityScore']}
+                
+                Suggest similar sustainable products from this list:
+                {[p['name'] for p in filtered_products]}
+                
+                Consider sustainability scores and product categories.
+                Return only product names, one per line.
+                """
+                
+                recommendations = await call_ollama(prompt)
+                
+                # Filter products based on AI recommendations
+                recommended_names = [name.strip() for name in recommendations.split('\n') if name.strip()]
+                filtered_products = [
                     p for p in filtered_products 
-                    if p["category"] == target_product["category"] and p["id"] != target_product["id"]
+                    if any(name.lower() in p['name'].lower() for name in recommended_names)
                 ]
-                
-                # Sort by sustainability score (green practice: promote sustainable products)
-                same_category.sort(key=lambda x: x["sustainabilityScore"], reverse=True)
-                
-                filtered_products = same_category
         
-        # Sort by purchase count as a simple popularity metric
-        filtered_products.sort(key=lambda x: x["purchaseCount"], reverse=True)
-        
-        # Limit results
+        # Sort by sustainability score and limit results
+        filtered_products.sort(
+            key=lambda x: (x["sustainabilityScore"], x["purchaseCount"]), 
+            reverse=True
+        )
         limited_products = filtered_products[:request.limit]
         
-        # Log energy efficiency metrics (green practice: monitor resource usage)
-        logger.info(f"Recommendation processing: filtered from {len(SAMPLE_PRODUCTS)} to {len(limited_products)} products")
+        logger.info(f"AI Recommendations generated: {len(limited_products)} products")
         
         return {"products": limited_products}
     
@@ -311,6 +334,31 @@ async def health_check():
     """Health check endpoint"""
     # Green practice: Minimal response to save bandwidth
     return {"status": "ok"}
+
+@app.get("/api/products/{product_id}", response_model=ProductDetailsResponse)
+async def get_product_details(product_id: str):
+    """Get product details and AI recommendations"""
+    try:
+        product = get_product_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Get recommendations
+        rec_request = RecommendationRequest(
+            productId=product_id,
+            category=product["category"],
+            limit=4
+        )
+        recommendations = await get_recommendations(rec_request)
+        
+        return ProductDetailsResponse(
+            product=product,
+            recommendations=recommendations.products
+        )
+        
+    except Exception as e:
+        logger.error(f"Error fetching product details: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error fetching product details")
 
 # Start server
 if __name__ == "__main__":

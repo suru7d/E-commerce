@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
 import { FaLeaf, FaShoppingCart, FaRecycle } from "react-icons/fa";
 import { useCart } from "../../context/CartContext";
+import axiosInstance from "../../utils/axiosConfig";
+import "./ProductDetail.css";
 
 const ProductDetail = ({ onApiCall }) => {
   const [product, setProduct] = useState(null);
@@ -12,36 +13,36 @@ const ProductDetail = ({ onApiCall }) => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    let isMounted = true;
+
+    const fetchProductDetails = async () => {
       try {
         setLoading(true);
-        // In a real app, this would be an API call
-        // For now, using sample data
-        const sampleProduct = {
-          _id: id,
-          name: "Eco-friendly Product",
-          price: 29.99,
-          description:
-            "This is a sustainable product with low carbon footprint",
-          category: "Electronics",
-          image: "https://via.placeholder.com/400x300",
-          carbonFootprint: 12,
-          sustainabilityScore: 85,
-          recycledMaterials: true,
-        };
+        const response = await axiosInstance.get(`/api/products/${id}`);
 
-        setProduct(sampleProduct);
-        if (onApiCall) onApiCall(1); // Track API call
+        if (isMounted) {
+          setProduct(response.data.data);
+          setError(null);
+          if (onApiCall) onApiCall(1);
+        }
       } catch (err) {
-        setError("Error loading product details");
-        console.error(err);
+        console.error("Error:", err);
+        if (isMounted && err.name !== "CanceledError") {
+          setError("Error loading product details");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchProduct();
-  }, [id, onApiCall]);
+    fetchProductDetails();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const handleAddToCart = () => {
     if (product) {
@@ -49,9 +50,9 @@ const ProductDetail = ({ onApiCall }) => {
     }
   };
 
-  if (loading) return <p>Loading product details...</p>;
-  if (error) return <p className="error">{error}</p>;
-  if (!product) return <p>Product not found</p>;
+  if (loading) return <div className="loading">Loading product details...</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!product) return <div className="error">Product not found</div>;
 
   return (
     <div className="product-detail-container">
@@ -62,18 +63,28 @@ const ProductDetail = ({ onApiCall }) => {
       <div className="product-detail">
         <div className="product-image-container">
           <img
-            src={product.image}
+            src={
+              product.image ||
+              `https://via.placeholder.com/600x400?text=${encodeURIComponent(
+                product.name
+              )}`
+            }
             alt={product.name}
             className="product-detail-image"
-            loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://via.placeholder.com/600x400?text=${encodeURIComponent(
+                product.name
+              )}`;
+            }}
           />
         </div>
 
         <div className="product-info">
           <h1>{product.name}</h1>
           <p className="product-price">${product.price.toFixed(2)}</p>
+          <p className="product-description">{product.description}</p>
 
-          {/* Sustainability indicators */}
           <div className="sustainability-metrics">
             <div className="sustainability-score">
               <span>Sustainability Score:</span>
@@ -83,11 +94,11 @@ const ProductDetail = ({ onApiCall }) => {
                   style={{ width: `${product.sustainabilityScore}%` }}
                 ></div>
               </div>
-              <span>{product.sustainabilityScore}/100</span>
+              <span>{product.sustainabilityScore}%</span>
             </div>
 
-            <div className="carbon-info">
-              <FaLeaf />
+            <div className="carbon-footprint">
+              <FaLeaf className="icon" />
               <span>Carbon Footprint: {product.carbonFootprint}kg CO2e</span>
             </div>
 
@@ -99,17 +110,52 @@ const ProductDetail = ({ onApiCall }) => {
             )}
           </div>
 
-          <div className="product-description">
-            <h3>Description</h3>
-            <p>{product.description}</p>
-          </div>
-
-          <button className="btn btn-block" onClick={handleAddToCart}>
-            <FaShoppingCart style={{ marginRight: "5px" }} />
-            Add to Cart
+          <button className="add-to-cart-btn" onClick={handleAddToCart}>
+            <FaShoppingCart /> Add to Cart
           </button>
         </div>
       </div>
+
+      {/* Recommendations Section */}
+      {product.recommendations && product.recommendations.length > 0 && (
+        <div className="recommendations-section">
+          <h2>You might also like</h2>
+          <div className="recommendations-grid">
+            {product.recommendations.map((rec) => (
+              <Link
+                to={`/product/${rec._id}`}
+                key={rec._id}
+                className="recommendation-card"
+              >
+                <img
+                  src={
+                    rec.image ||
+                    `https://via.placeholder.com/200x150?text=${encodeURIComponent(
+                      rec.name
+                    )}`
+                  }
+                  alt={rec.name}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://via.placeholder.com/200x150?text=${encodeURIComponent(
+                      rec.name
+                    )}`;
+                  }}
+                />
+                <div className="recommendation-info">
+                  <h3>{rec.name}</h3>
+                  <p>${rec.price.toFixed(2)}</p>
+                  <div className="eco-badge small">
+                    <FaLeaf />
+                    <span>{rec.sustainabilityScore}%</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
