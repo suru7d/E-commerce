@@ -1,7 +1,6 @@
-import axios from "axios";
+const axios = require("axios"); // Change import to require
 
-const OLLAMA_API_URL =
-  process.env.OLLAMA_API_URL || "http://localhost:11434/api";
+const OLLAMA_API_URL = "http://127.0.0.1:11434"; // Direct URL without /api
 const OLLAMA_MODEL = "llama3.2:latest";
 
 const SYSTEM_PROMPTS = {
@@ -25,16 +24,21 @@ Provide clear, actionable insights.`,
 
 async function callOllama(prompt, systemPrompt = null) {
   try {
-    console.log("Calling Ollama API with prompt:", prompt);
+    console.log("Attempting to connect to Ollama at:", OLLAMA_API_URL);
+
     const messages = [];
     if (systemPrompt) {
       messages.push({ role: "system", content: systemPrompt });
     }
     messages.push({ role: "user", content: prompt });
 
-    const response = await axios.post(`${OLLAMA_API_URL}/chat`, {
+    console.log("Sending request to Ollama with model:", OLLAMA_MODEL);
+
+    const response = await axios.post(`${OLLAMA_API_URL}/api/generate`, {
       model: OLLAMA_MODEL,
-      messages,
+      prompt: prompt,
+      system: systemPrompt || SYSTEM_PROMPTS.default,
+      stream: false,
       options: {
         temperature: 0.7,
         top_k: 40,
@@ -43,14 +47,36 @@ async function callOllama(prompt, systemPrompt = null) {
       },
     });
 
-    return response.data.message.content;
+    if (!response.data || !response.data.response) {
+      console.error("Invalid response from Ollama:", response.data);
+      throw new Error("Invalid response format from Ollama");
+    }
+
+    console.log("Received response from Ollama");
+    return response.data.response;
   } catch (error) {
-    console.error("Ollama API error:", error);
-    throw new Error("Failed to process request");
+    console.error("Ollama API error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    throw new Error(`Failed to process request: ${error.message}`);
+  }
+}
+
+async function testOllamaConnection() {
+  try {
+    const response = await axios.get(`${OLLAMA_API_URL}/api/version`);
+    console.log("Ollama connection test successful:", response.data);
+    return true;
+  } catch (error) {
+    console.error("Ollama connection test failed:", error.message);
+    return false;
   }
 }
 
 module.exports = {
   callOllama,
+  testOllamaConnection,
   SYSTEM_PROMPTS,
 };
